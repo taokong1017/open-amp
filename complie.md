@@ -6,7 +6,7 @@ cmake ../libmetal
 make VERBOSE=1 DESTDIR=$(pwd) install
 
 mkdir -p /home/ws/Src/openamp//build-openamp
-cd /home/ws/Src/openamp//build-openamp
+cd /home/ws/Src/openamp/build-openamp
 cmake ../open-amp -DCMAKE_INCLUDE_PATH=/home/ws/Src/openamp/build-libmetal/usr/local/include \
 -DCMAKE_LIBRARY_PATH=/home/ws/Src/openamp/build-libmetal/usr/local/lib -DWITH_APPS=ON -DWITH_SHARED_LIB=OFF
 make VERBOSE=1 DESTDIR=$(pwd) install
