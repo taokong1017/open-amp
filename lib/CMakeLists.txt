@@ -10,14 +10,6 @@ collect (PROJECT_LIB_SOURCES version.c)
 add_subdirectory (virtio)
 add_subdirectory (rpmsg)
 add_subdirectory (remoteproc)
-if (WITH_VIRTIO_MMIO_DRV)
-add_subdirectory (virtio_mmio)
-endif (WITH_VIRTIO_MMIO_DRV)
-
-if (WITH_PROXY)
-  add_subdirectory (proxy)
-  add_subdirectory (service/rpmsg/rpc)
-endif (WITH_PROXY)
 
 set (OPENAMP_LIB open_amp)
 

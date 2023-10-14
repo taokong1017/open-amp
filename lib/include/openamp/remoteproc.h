@@ -409,12 +409,6 @@ struct remoteproc {
 	/** Remoteproc operations */
 	const struct remoteproc_ops *ops;
 
-	/** Boot address */
-	metal_phys_addr_t bootaddr;
-
-	/** Executable loader */
-	const struct loader_ops *loader;
-
 	/** Remote processor state */
 	unsigned int state;
 
@@ -694,113 +688,6 @@ int remoteproc_set_rsc_table(struct remoteproc *rproc,
  * @return 0 for success and negative value for errors
  */
 int remoteproc_config(struct remoteproc *rproc, void *data);
-
-/**
- * @brief This function starts the remote processor.
- * It assumes the firmware is already loaded.
- *
- * @param rproc	Pointer to remoteproc instance to start
- *
- * @return 0 for success and negative value for errors
- */
-int remoteproc_start(struct remoteproc *rproc);
-
-/**
- * @brief This function stops the remote processor but it
- * will not release its resource.
- *
- * @param rproc	Pointer to remoteproc instance
- *
- * @return 0 for success and negative value for errors
- */
-int remoteproc_stop(struct remoteproc *rproc);
-
-/**
- * @brief This function shuts down the remote processor and
- * releases its resources.
- *
- * @param rproc	Pointer to remoteproc instance
- *
- * @return 0 for success and negative value for errors
- */
-int remoteproc_shutdown(struct remoteproc *rproc);
-
-/**
- * @brief Loads the executable
- *
- * Expects the user application defines how to open the executable file and how
- * to get data from the executable file and how to load data to the target
- * memory.
- *
- * @param rproc		Pointer to the remoteproc instance
- * @param path		Optional path to the image file
- * @param store		Pointer to user defined image store argument
- * @param store_ops	Pointer to image store operations
- * @param img_info	Pointer to memory which stores image information used
- *			by remoteproc loader
- *
- * @return 0 for success and negative value for failure
- */
-int remoteproc_load(struct remoteproc *rproc, const char *path,
-		    void *store, const struct image_store_ops *store_ops,
-		    void **img_info);
-
-/**
- * @brief Loads the executable
- *
- * Expects the caller has loaded image data to local
- * memory and passed to the this function. If the function needs more
- * image data it will return the next expected image data offset and
- * the next expected image data length. If the function requires the
- * caller to download image data to the target memory, it will also
- * return the target physical address besides the offset and length.
- * This function can be used to load firmware in stream mode. In this
- * mode, you cannot do seek to the executable file. If the executable
- * is ELF, it cannot get the resource table section before it loads
- * the full ELF file. Furthermore, application usually don't store
- * the data which is loaded to local memory in streaming mode, and
- * thus, in this mode, it will load the binary to the target memory
- * before it gets the resource table. And thus, when calling this function
- * don't put the target executable memory in the resource table, as
- * this function will parse the resource table after it loads the binary
- * to target memory.
- *
- * @param rproc		Pointer to the remoteproc instance
- * @param img_data	Pointer to image data for remoteproc loader to parse
- * @param offset	Image data offset to the beginning of the image file
- * @param len		Image data length
- * @param img_info	Pointer to memory which stores image information used
- *			by remoteproc loader
- * @param pa		Pointer to the target memory physical address. If the
- *			next expected data doesn't need to load to the target
- *			memory, the function will set it to ANY.
- * @param io		Pointer to the io region. If the next expected data
- *			doesn't need to load to the target memory, the function
- *			will set it to NULL.
- * @param noffset	Pointer to the next image data offset to the beginning
- *			of the image file needs to load to local or to the
- *			target memory.
- * @param nlen		Pointer to the next image data length needs to load to
- *			local or to the target memory.
- * @param nmlen		Pointer to the memory size. It is only used when the
- *			next expected data is going to be loaded to the target
- *			memory. E.g. in ELF, it is possible that loadable
- *			segment in memory is larger that the segment data in
- *			the ELF file. In this case, application will need to
- *			pad the rest of the memory with padding.
- * @param padding	Pointer to the padding value. It is only used when the
- *			next expected data is going to be loaded to the target
- *			memory and the target memory size is larger than the
- *			segment data in the executable file.
- *
- * @return 0 for success and negative value for failure
- */
-int remoteproc_load_noblock(struct remoteproc *rproc,
-			    const void *img_data, size_t offset, size_t len,
-			    void **img_info,
-			    metal_phys_addr_t *pa, struct metal_io_region **io,
-			    size_t *noffset, size_t *nlen,
-			    size_t *nmlen, unsigned char *padding);
 
 /**
  * @brief Allocate notifyid for resource

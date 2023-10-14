@@ -10,13 +10,8 @@
 #include <metal/utilities.h>
 #include <openamp/rsc_table_parser.h>
 
-static int handle_dummy_rsc(struct remoteproc *rproc, void *rsc);
-
 /* Resources handler */
 static const rsc_handler rsc_handler_table[] = {
-	handle_carve_out_rsc, /**< carved out resource */
-	handle_dummy_rsc, /**< IOMMU dev mem resource */
-	handle_trace_rsc, /**< trace buffer resource */
 	handle_vdev_rsc, /**< virtio resource */
 };
 
@@ -76,32 +71,6 @@ int handle_rsc_table(struct remoteproc *rproc,
 	return status;
 }
 
-int handle_carve_out_rsc(struct remoteproc *rproc, void *rsc)
-{
-	struct fw_rsc_carveout *carve_rsc = rsc;
-	metal_phys_addr_t da;
-	metal_phys_addr_t pa;
-	size_t size;
-	unsigned int attribute;
-
-	/* Validate resource fields */
-	if (!carve_rsc) {
-		return -RPROC_ERR_RSC_TAB_NP;
-	}
-
-	if (carve_rsc->reserved) {
-		return -RPROC_ERR_RSC_TAB_RSVD;
-	}
-	pa = carve_rsc->pa;
-	da = carve_rsc->da;
-	size = carve_rsc->len;
-	attribute = carve_rsc->flags;
-	if (remoteproc_mmap(rproc, &pa, &da, size, attribute, NULL))
-		return 0;
-	else
-		return -RPROC_EINVAL;
-}
-
 int handle_vendor_rsc(struct remoteproc *rproc, void *rsc)
 {
 	if (rproc && rproc->ops->handle_rsc) {
@@ -155,36 +124,6 @@ err:
 	metal_bitmap_clear_bit(&rproc->bitmap, vdev_rsc->notifyid);
 
 	return -RPROC_ERR_RSC_TAB_NP;
-}
-
-int handle_trace_rsc(struct remoteproc *rproc, void *rsc)
-{
-	struct fw_rsc_trace *vdev_rsc = rsc;
-	(void)rproc;
-
-	if (vdev_rsc->da != FW_RSC_U32_ADDR_ANY && vdev_rsc->len != 0)
-		return 0;
-	/* FIXME: The host should allocated a memory used by remote */
-
-	return -RPROC_ERR_RSC_TAB_NS;
-}
-
-/**
- * @internal
- *
- * @brief Dummy resource handler.
- *
- * @param rproc	Pointer to remote remoteproc
- * @param rsc	Pointer to trace resource
- *
- * @return No service error
- */
-static int handle_dummy_rsc(struct remoteproc *rproc, void *rsc)
-{
-	(void)rproc;
-	(void)rsc;
-
-	return -RPROC_ERR_RSC_TAB_NS;
 }
 
 size_t find_rsc(void *rsc_table, unsigned int rsc_type, unsigned int index)
