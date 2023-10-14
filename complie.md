@@ -15,3 +15,10 @@ sudo LD_LIBRARY_PATH=/home/ws/Src/openamp/build-openamp/usr/local/lib:/home/ws/S
 
 sudo LD_LIBRARY_PATH=/home/ws/Src/openamp/build-openamp/usr/local/lib:/home/ws/Src/openamp/build-libmetal/usr/local/lib /home/ws/Src/openamp/build-openamp/usr/local/bin/rpmsg-echo-ping-static 1
 
+
+gdb:
+sudo LD_LIBRARY_PATH=/home/ws/Src/openamp/build-openamp/usr/local/lib:/home/ws/Src/openamp/build-libmetal/usr/local/lib gdb /home/ws/Src/openamp/build-openamp/usr/local/bin/rpmsg-echo-static
+
+sudo LD_LIBRARY_PATH=/home/ws/Src/openamp/build-openamp/usr/local/lib:/home/ws/Src/openamp/build-libmetal/usr/local/lib gdb /home/ws/Src/openamp/build-openamp/usr/local/bin/rpmsg-echo-ping-static
+
+r 1
