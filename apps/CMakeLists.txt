@@ -8,7 +8,5 @@ set (APPS_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set (APPS_SHARE_DIR "${CMAKE_CURRENT_BINARY_DIR}/share")
 
-add_subdirectory (machine)
 add_subdirectory (system)
-add_subdirectory (tests)
 add_subdirectory (examples)
